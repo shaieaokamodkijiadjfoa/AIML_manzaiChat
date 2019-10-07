@@ -1,0 +1,126 @@
+body {
+    background: #fff;
+}
+.row{
+    background-color: floralwhite;
+}
+.fixed-panel {
+    min-height: 450px;
+    max-height: 450px;
+    background-color: #19313c;
+    color: black;
+    overflow: auto;
+}
+
+
+.media-list {
+    overflow: auto;
+    clear: both;
+    display: table;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: normal;
+    line-break: strict;
+}
+
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 6px solid transparent;
+    border-radius: 25px;
+}
+
+.panel-info {
+    border-color: #8ef13c;
+}
+
+.panel-info>.panel-heading {
+    color: #fff;
+    background-color: #8ef13c !important;
+    border-color: #0c2735;
+}
+
+.panel-footer {
+    padding: 10px 15px;
+    background-color: #0c2735;
+    border-top: 1px solid #0c2735;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.leave_form{
+    font-size: 16px;
+    margin-top: 2px;
+    color: #0c468f;
+    text-align: center;
+    font-weight: bold;
+}
+
+.leave_empid{
+    margin-top: 10px;
+    color:#0c468f;
+    width: 100%;
+}
+
+.leave_password{
+    margin-top: 10px !important;
+    color:#0c468f;
+}
+
+.balloon1-left {
+    position: relative;
+    display: inline-block;
+    margin: 1.5em 0 1.5em 15px;
+    padding: 16px 10px;
+    min-width: 120px;
+    max-width: 100%;
+    color: #555;
+    font-size: 21px;
+    background: #e0edff;
+    border-radius: 15px;
+  }
+  
+  .balloon1-left:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -30px;
+    margin-top: -15px;
+    border: 15px solid transparent;
+    border-right: 15px solid #e0edff;
+  }
+  
+  .balloon1-left p {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .balloon1-right {
+    position: relative;
+    display: inline-block;
+    margin: 1.5em 15px 1.5em 0;
+    padding: 16px 10px;
+    min-width: 120px;
+    max-width: 100%;
+    color: #555;
+    font-size: 21px;
+    background: #FFD7A9;
+    border-radius: 15px;
+  }
+  
+  .balloon1-right:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    margin-top: -15px;
+    border: 15px solid transparent;
+    border-left: 15px solid #FFD7A9;
+  }
+  
+  .balloon1-right p {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }

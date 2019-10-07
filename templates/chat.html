@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="ja-jp">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-136583427-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-136583427-1');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>変な会話 チャットボット</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" >
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container background-color: rgb(255,0,255);">
+
+        <div class="row">
+            <h3 class="text-center header_text">
+                変な会話をするチャットボット
+            </h3>
+            <div class="container">
+                <div id="chatPanel" class="panel panel-info">
+                    <div class="panel-heading" style='background-color: #0275d8 !important;'>
+                        <!--<strong>変な会話スタート</strong>-->
+                    </div>
+                    <div class="panel-body fixed-panel" style='background-color: #fff !important;  height:80%;'>
+                        <ul class="media-list">
+                        </ul>
+                    </div>
+                    <div class="panel-footer">
+                        <form method="post" id="chatbot-form">
+                            <div class="input-group">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <input type="text" class="form-control" placeholder="メッセージを入力してね" name="messageText" id="messageText" autofocus/>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-info" type="button" id="chatbot-form-btn">送信</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalGenerateResponse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title" id="exampleModalCenterTitle">日本語限定の応答文作成<br>Create a response in Japanese only.</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form method="post" id="generator-form">
+                <div class="input-group">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="text" class="form-control" placeholder="覚えさせたい言葉を入力してくだちぃ。" name="requestText" id="requestText" autofocus/>
+                    <label data-error="wrong" data-success="right" for="defaultForm-pass">Enter the words you want AIML to remember.</label>
+                </div>
+                <div class="input-group">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="text" class="form-control" placeholder="どんな言葉が返ってくるといいですか？" name="responseText" id="responseText" autofocus/>
+                    <label data-error="wrong" data-success="right" for="defaultForm-pass">What kind of words should I get from AIML?</label>
+                </div>
+            </form>
+            
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+            <button class="btn btn-primary" type="button" id="genrate-aiml-btn">言葉を覚えさせる<br>cause to learn words.</button>
+        </div>
+        </div>
+    </div>
+    </div>
+    
+    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" id="small-dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js" integrity="sha256-wS9gmOZBqsqWxgIVgA8Y9WcQOa7PgSIX+rPA0VL2rbQ=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            $('#chatbot-form-btn').click(function (e) {
+                e.preventDefault();
+                $('#chatbot-form').submit();
+            });
+
+            $('#chatbot-form').submit(function (e) {
+                e.preventDefault();
+
+                var message = $('#messageText').val();
+                $(".media-list").append(
+                    '<li class="media"><div class="media-body"><div class="media"><div class="media-body"><div class="balloon1-left"><p>' +
+                    message + '</p></div></div></div></div></li>');
+                $.ajax({
+                    type: "POST",
+                    url: "/ask",
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        $('#messageText').val('');
+
+                        var answer = response.answer;
+                        const chatPanel = document.getElementById("chatPanel");
+                        if (answer != '') {
+                            $(".media-list").append(
+                                '<li class="media" style="text-align: right;"><div class="media-body"><div class="media"><div class="media-body"><div class="balloon1-right"><p>' + answer +
+                                '</p></div></div></div></div></li>');
+                            $(".fixed-panel").stop().animate({
+                                scrollTop: $(".fixed-panel")[0].scrollHeight
+                            }, 1000);
+                        } else {
+                            $(".media-list").append(
+                            '<li class="media" style="text-align: right;"><div class="media-body"><div class="media"><div class="media-body"><div class="balloon1-right"><p>' + "ファイルにはありません。" +
+                            '<br>' + "日本語限定ですが、<br>言葉を覚えさせたいですか？<br>" + '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalGenerateResponse">It does not exist in the AIML file. <br> It is limited to Japanese,<br> but do you want aiml to memorize words?</button>' +
+                            '</p></div></div></div></div></li>');
+                        }
+
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+
+        $('#genrate-aiml-btn').click(function (e) {
+            e.preventDefault();
+            $('#generator-form').submit();
+        });
+        $('#generator-form').submit(function (e) {
+            e.preventDefault();
+            var requestText = $('#requestText').val();
+            var responseText = $('#responseText').val()
+            $.ajax({
+                type: "POST",
+                url: "/generator",
+                data: $(this).serialize({
+                    "requestText":requestText,
+                    "responseText":responseText
+                }),
+                success: function (response) {
+                    $("#modalGenerateResponse").css("display","none");
+                    alert(response.result);
+                    console.log(response.result);
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        });
+    </script>
+</body>
+
+</html>
